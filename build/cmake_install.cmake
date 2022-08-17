@@ -1,4 +1,4 @@
-# Install script for directory: C:/Users/degan/OneDrive/Desktop/AirfuelProtocolSuite/ESP-32/PRU/nimble
+# Install script for directory: C:/Users/degan/OneDrive/Desktop/AirfuelProtocolSuite/ESP-32/CRU/nimble
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -34,7 +34,7 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("C:/Users/degan/OneDrive/Desktop/AirfuelProtocolSuite/ESP-32/PRU/nimble/build/esp-idf/cmake_install.cmake")
+  include("C:/Users/degan/OneDrive/Desktop/AirfuelProtocolSuite/ESP-32/CRU/nimble/build/esp-idf/cmake_install.cmake")
 
 endif()
 
@@ -46,5 +46,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "C:/Users/degan/OneDrive/Desktop/AirfuelProtocolSuite/ESP-32/PRU/nimble/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "C:/Users/degan/OneDrive/Desktop/AirfuelProtocolSuite/ESP-32/CRU/nimble/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

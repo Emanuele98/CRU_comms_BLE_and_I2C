@@ -33,7 +33,11 @@ float i2c_read_voltage_sensor(void)
     i2c_master_stop(cmd);
     ret = i2c_master_cmd_begin(I2C_MASTER_NUM, cmd, 1000 / portTICK_RATE_MS);
     i2c_cmd_link_delete(cmd);
-    ESP_ERROR_CHECK(ret);
+        if(ret!=ESP_OK)
+    {
+        ESP_LOGW(TAG, "voltage writing problem");
+    }
+    //ESP_ERROR_CHECK(ret);
 
     cmd = i2c_cmd_link_create();
     i2c_master_start(cmd);
@@ -43,12 +47,18 @@ float i2c_read_voltage_sensor(void)
     i2c_master_stop(cmd);
     ret = i2c_master_cmd_begin(I2C_MASTER_NUM, cmd, 1000 / portTICK_RATE_MS);
     i2c_cmd_link_delete(cmd);
-    ESP_ERROR_CHECK(ret);
+    if(ret!=ESP_OK)
+    {
+        ESP_LOGW(TAG, "voltage reading problem");
+    }
+    //ESP_ERROR_CHECK(ret);
 
     //printf("first byte: %02x\n", byte_1);
     //printf("second byte : %02x\n", byte_2);
     float value = (int16_t)(first_byte << 8 | second_byte) * 0.00125;
-    //printf("sensor val: %.02f [V]\n", value);
+    printf("sensor val: %.02f [V]\n", value);
+
+    xSemaphoreGive(i2c_sem);
 
     return value;
 }
@@ -65,7 +75,11 @@ float i2c_read_current_sensor(void)
     i2c_master_stop(cmd);
     ret = i2c_master_cmd_begin(I2C_MASTER_NUM, cmd, 1000 / portTICK_RATE_MS);
     i2c_cmd_link_delete(cmd);
-    ESP_ERROR_CHECK(ret);
+        if(ret!=ESP_OK)
+    {
+        ESP_LOGW(TAG, "current writing problem");
+    }
+    //ESP_ERROR_CHECK(ret);
 
     cmd = i2c_cmd_link_create();
     i2c_master_start(cmd);
@@ -75,12 +89,18 @@ float i2c_read_current_sensor(void)
     i2c_master_stop(cmd);
     ret = i2c_master_cmd_begin(I2C_MASTER_NUM, cmd, 1000 / portTICK_RATE_MS);
     i2c_cmd_link_delete(cmd);
-    ESP_ERROR_CHECK(ret);
+    if(ret!=ESP_OK)
+    {
+        ESP_LOGW(TAG, "current reading problem");
+    }
+    //ESP_ERROR_CHECK(ret);
 
     //printf("first byte: %02x\n", first_byte);
     //printf("second byte : %02x\n", second_byte);
     float value = (int16_t)(first_byte << 8 | second_byte) * 0.0000025 / 0.012;
-    //printf("sensor val: %.02f [A]\n", value);
+    printf("sensor val: %.02f [A]\n", value);
+
+    xSemaphoreGive(i2c_sem);
 
     return value;
 }
@@ -98,7 +118,12 @@ float i2c_read_temperature_sensor(void)
     i2c_master_stop(cmd);
     ret = i2c_master_cmd_begin(I2C_MASTER_NUM, cmd, 1000 / portTICK_RATE_MS);
     i2c_cmd_link_delete(cmd);
-    ESP_ERROR_CHECK(ret);
+    if(ret!=ESP_OK)
+    {
+        ESP_LOGW(TAG, "temperature writing problem");
+    }
+
+    //ESP_ERROR_CHECK(ret);
 
     cmd = i2c_cmd_link_create();
     i2c_master_start(cmd);
@@ -108,36 +133,21 @@ float i2c_read_temperature_sensor(void)
     i2c_master_stop(cmd);
     ret = i2c_master_cmd_begin(I2C_MASTER_NUM, cmd, 1000 / portTICK_RATE_MS);
     i2c_cmd_link_delete(cmd);
-    ESP_ERROR_CHECK(ret);
+    if(ret!=ESP_OK)
+    {
+        ESP_LOGW(TAG, "temperature reading problem");
+    }
+
+    //ESP_ERROR_CHECK(ret);
 
     //printf("first byte: %02x\n", first_byte);
     //printf("second byte : %02x\n", second_byte);
     float value = (int16_t)(first_byte << 4 | second_byte >> 4) * 0.0625 ;
-    //printf("sensor val: %.02f [°C]\n", value);
+    printf("sensor val: %.02f [°C]\n", value);
+
+    xSemaphoreGive(i2c_sem);
 
     return value;
-}
-
-//? do the mean value??
-
-/** 
- * @brief Mean function for ADC measurements
- * @details Handles a few samples from a specified ADC channel and averages
- *          it on the number of samples.
- * 
- * @param pin_number Pin or channel number used for measurements
- * @param n_samples  Number of samples needed
- * 
- * @return The average value (in bits) over the number of samples
-*/
-static int mean_adc(uint8_t pin_number, uint32_t n_samples)
-{
-    int mean = 0;
-    for (int i=0; i!=n_samples; i++)
-    {
-        mean += adc1_get_raw(pin_number);
-    }
-    return (int)(mean/n_samples);
 }
 
 void enable_power_output(void)

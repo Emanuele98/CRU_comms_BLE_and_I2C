@@ -1,4 +1,4 @@
-# Install script for directory: C:/Users/degan/OneDrive/Desktop/AirfuelProtocolSuite/ESP-32/PRU/nimble/main
+# Install script for directory: C:/Users/degan/OneDrive/Desktop/AirfuelProtocolSuite/ESP-32/CRU/nimble/main
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

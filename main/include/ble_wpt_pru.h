@@ -33,14 +33,6 @@
 #include "nimble/nimble_port_freertos.h"
 #include "host/util/util.h"
 
-/*
-#include "esp_gap_ble_api.h"
-#include "esp_gatts_api.h"
-#include "esp_bt_defs.h"
-#include "esp_bt_main.h"
-#include "esp_gatt_common_api.h"
-*/
-#include "airfuel_integration.h"
 
 //timers
 TimerHandle_t dynamic_t_handle, alert_t_handle;

@@ -2,9 +2,6 @@
 #define __PRU_BSP_H__
 
 #include "driver/gpio.h"
-#include "driver/adc.h"
-#include "driver/dac.h"
-
 
 /* Arbitrary pin values */
 #define IOUT_PIN                     ADC1_CHANNEL_5        /* GPIO33 */

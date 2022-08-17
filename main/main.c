@@ -16,13 +16,15 @@
 
 #define APP_ADV_INTERVAL                32                                     /**< The advertising interval (in units of 0.625 ms. This value corresponds to 20 ms). */
 
-//try. if error, put semaphore!
-#define DYNAMIC_PARAM_TIMER_INTERVAL    pdMS_TO_TICKS(50)                    /**< Timer synced to Dynamic parameter characteristic (50 ms). */
+#define DYNAMIC_PARAM_TIMER_INTERVAL    pdMS_TO_TICKS(500)                    /**< Timer synced to Dynamic parameter characteristic (50 ms). */
 #define NOTIFICATION_INTERVAL           pdMS_TO_TICKS(250)				       /**< Timer synced to Alert (Notification) parameter characteristic (250 ms). */
 
 #define WPT_SVC_UUID16               0xFFFE
 
 static const char* TAG = "MAIN";
+
+int counter = 0;
+
 
 
 //nimBLE
@@ -30,24 +32,37 @@ static uint8_t own_addr_type;
 static int bleprph_gap_event(struct ble_gap_event *event, void *arg);
 
 
+
+
 //read dynamic parameters from I2C sensors
 void dynamic_param_timeout_handler(void *arg)
 {
-    //ESP_LOGI(TAG, "dynamic time ye");
+    if (xSemaphoreTake(i2c_sem, portMAX_DELAY) == pdTRUE)
+    {
+        switch(counter)
+        {
+            //voltage
+            case 0:
+                counter++;
+                //m_dyn_payload.vrect = i2c_read_voltage_sensor();
+                m_dyn_payload.vrect = 100;
+                break;
+            
+            //current
+            case 1:
+                counter++;
+                //m_dyn_payload.irect = i2c_read_current_sensor();
+                m_dyn_payload.irect = 100;
+                break;
 
-	m_dyn_payload.vrect = i2c_read_voltage_sensor();
-	m_dyn_payload.irect = i2c_read_current_sensor();
-    m_dyn_payload.temp_ratio = i2c_read_temperature_sensor();
-
-    //temporary tests
-    //float voltage = 10;
-    //float current = 10;
-    //float temp = 10;
-
-    //m_dyn_payload.vrect = voltage;
-	//m_dyn_payload.irect = current;
-    //m_dyn_payload.temp_ratio = temp;
-	
+            //temperature 1
+            case 2:
+                counter = 0;
+                //m_dyn_payload.temp_ratio = i2c_read_temperature_sensor();
+                m_dyn_payload.temp_ratio = 100;
+                break;
+        }
+    }
 }
 
 void alert_timeout_handler(void *arg)
@@ -288,6 +303,9 @@ void init_sw_timers(void)
     dynamic_t_handle = xTimerCreate("dynamic params", DYNAMIC_PARAM_TIMER_INTERVAL, pdTRUE, NULL, dynamic_param_timeout_handler);
     alert_t_handle = xTimerCreate("alert", NOTIFICATION_INTERVAL, pdTRUE, NULL, alert_timeout_handler);
 
+    xTimerStart(dynamic_t_handle, 0);
+
+
     if ((dynamic_t_handle == NULL) || (alert_t_handle == NULL))
     {
         ESP_LOGW(TAG, "Timers were not created successfully");
@@ -329,8 +347,11 @@ void init_setup(void)
     /* Initialize software timers */
     init_sw_timers();
     
-    /* Initialize GPIOs and other hardware peripherals (ADC and DAC) */
+    /* Initialize GPIOs and other hardware peripherals (I2C) */
     init_hw();
+
+    /* Initialize I2C semaphore */
+    i2c_sem = xSemaphoreCreateMutex();
 }
 
 /** 

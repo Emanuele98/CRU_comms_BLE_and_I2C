@@ -4,6 +4,8 @@
 #include <math.h>
 #include <stdint.h>
 #include "driver/i2c.h"
+#include "esp_log.h"
+
 
 #include "pru_bsp.h"
 
@@ -37,11 +39,12 @@
 #define LOCAL_OVP                    10000             // Local fault indicator for overvoltage (in mV)
 #define LOCAL_OCP                    ITX_ABS_MAX       // Local fault indicator for overcurrent (in mA)
 
-/* Number of samples for a single ADC reading */
-#define N_ADC_SAMPLES                5                       // Multisampling
 
 /* Keeps power output state in memory */
 uint8_t enabled;
+
+/* Semaphore used to protect against I2C reading simultaneously */
+SemaphoreHandle_t i2c_sem;
 
 float i2c_read_voltage_sensor(void);
 float i2c_read_current_sensor(void);

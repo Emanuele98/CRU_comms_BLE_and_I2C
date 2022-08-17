@@ -34,7 +34,7 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("C:/Users/degan/OneDrive/Desktop/AirfuelProtocolSuite/ESP-32/PRU/nimble/build/esp-idf/mbedtls/mbedtls/cmake_install.cmake")
+  include("C:/Users/degan/OneDrive/Desktop/AirfuelProtocolSuite/ESP-32/CRU/nimble/build/esp-idf/mbedtls/mbedtls/cmake_install.cmake")
 
 endif()
 
